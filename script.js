@@ -68,7 +68,6 @@ document.querySelector('button').addEventListener('click', async function() {
         var humidity = await humidityConsult(respuestaPeticion);
         var wind = await windConsult(respuestaPeticion);
         var city = await cityConsult(respuestaPeticion);
-        console.log(city);
         display(weather,temperature,humidity,wind,city);
     }
     else {
