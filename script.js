@@ -2,13 +2,13 @@ async function consumeApiWithAxios(url) {
     try {
         const response = await axios.get(url);
         console.log(`Nos dio respuesta la api ${response.status}`);
-        return response;
+        return response;  
     } catch (error) {
         console.error(`Falló la petición a la API con error: ${error.message}`);
-        alert("Ese pokemon no existe, revisa la ortografia,");
-        return null; 
+        return error.response; 
     }
 }
+
 async function weatherConsult(resp) {
     const respApi = await resp;
     const datos = respApi.data;
@@ -52,6 +52,8 @@ async function display(weat,temp,humi,wind,city){
     windElement.textContent = `${wind}km/h`;
     const cityElement = document.querySelector('.city');
     cityElement.textContent = `${city}`;
+    var errorContainer = document.querySelector('.error');
+    errorContainer.style.display = 'none';
 }
 const apiKey = 'd3c39f57206d5904890771c822ffaac3';
 const apiUrl = 'https://api.openweathermap.org/data/2.5/weather?units=metric&q=';
@@ -60,13 +62,19 @@ document.querySelector('button').addEventListener('click', async function() {
     var  apiCity = document.querySelector('input[type="text"]').value.toLowerCase();
     var url = `${apiUrl}${apiCity}&appid=${apiKey}`;
     var respuestaPeticion = await consumeApiWithAxios(url);
-    var temperature = await tempConsult(respuestaPeticion);
-    var weather = await weatherConsult(respuestaPeticion);
-    var humidity = await humidityConsult(respuestaPeticion);
-    var wind = await windConsult(respuestaPeticion);
-    var city = await cityConsult(respuestaPeticion);
-    console.log(city);
-    display(weather,temperature,humidity,wind,city);
-
-
+    if (respuestaPeticion.status === 200){
+        var temperature = await tempConsult(respuestaPeticion);
+        var weather = await weatherConsult(respuestaPeticion);
+        var humidity = await humidityConsult(respuestaPeticion);
+        var wind = await windConsult(respuestaPeticion);
+        var city = await cityConsult(respuestaPeticion);
+        console.log(city);
+        display(weather,temperature,humidity,wind,city);
+    }
+    else {
+        var weatherContainer = document.querySelector('.weather');
+        var errorContainer = document.querySelector('.error');
+        weatherContainer.style.display = 'none';
+        errorContainer.style.display = 'block';
+    }
 })
