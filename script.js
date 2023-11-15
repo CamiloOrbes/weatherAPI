@@ -21,24 +21,52 @@ async function tempConsult(resp) {
     const tempeatureJson = datos.main.temp;
     return tempeatureJson;
 }
-async function display(weat,temp){
+async function humidityConsult(resp) {
+    const respApi = await resp;
+    const datos = respApi.data;
+    const humidityJson = datos.main.humidity;;
+    return humidityJson;
+}
+async function windConsult(resp) {
+    const respApi = await resp;
+    const datos = respApi.data;
+    const windJson = datos.wind.speed;
+    return windJson;
+}
+async function cityConsult(resp) {
+    const respApi = await resp;
+    const datos = respApi.data;
+    const cityJson = datos.name;
+    return cityJson;
+}
+async function display(weat,temp,humi,wind,city){
     const weatherIconElement = document.querySelector('.weather-icon');
     weatherIconElement.src = `images/${weat.toLowerCase()}.png`;
     const weatherContainer = document.querySelector('.weather');
     weatherContainer.style.display = 'block';
     const tempElement = document.querySelector('.temp');
     tempElement.textContent = `${Math.round(temp)}°C`;
+    const humiElement = document.querySelector('.humidity');
+    humiElement.textContent = `${humi}%`;
+    const windElement = document.querySelector('.wind');
+    windElement.textContent = `${wind}km/h`;
+    const cityElement = document.querySelector('.city');
+    cityElement.textContent = `${city}`;
 }
 const apiKey = 'd3c39f57206d5904890771c822ffaac3';
 const apiUrl = 'https://api.openweathermap.org/data/2.5/weather?units=metric&q=';
 
 document.querySelector('button').addEventListener('click', async function() {
-    var  ciudad = document.querySelector('input[type="text"]').value.toLowerCase();
-    var url = `${apiUrl}${ciudad}&appid=${apiKey}`;
+    var  apiCity = document.querySelector('input[type="text"]').value.toLowerCase();
+    var url = `${apiUrl}${apiCity}&appid=${apiKey}`;
     var respuestaPeticion = await consumeApiWithAxios(url);
     var temperature = await tempConsult(respuestaPeticion);
     var weather = await weatherConsult(respuestaPeticion);
-    display(weather,temperature);
+    var humidity = await humidityConsult(respuestaPeticion);
+    var wind = await windConsult(respuestaPeticion);
+    var city = await cityConsult(respuestaPeticion);
+    console.log(city);
+    display(weather,temperature,humidity,wind,city);
 
 
 })
